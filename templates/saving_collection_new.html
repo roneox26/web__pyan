@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Savings Collection</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-dark bg-success px-3">
+    <span class="navbar-brand">🏦 Savings Collection</span>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-light">← Back</a>
+  </nav>
+
+  <div class="container mt-4">
+    <h3>সেভিংস কালেকশন</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if customers %}
+      {% for customer in customers %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5>{{ customer.name }}</h5>
+            <p>Phone: {{ customer.phone }} | Current Savings: ৳{{ customer.savings_balance }}</p>
+            
+            <form method="POST" action="{{ url_for('collect_saving') }}" class="row g-2">
+              <input type="hidden" name="customer_id" value="{{ customer.id }}">
+              <div class="col-auto">
+                <input type="text" name="amount" class="form-control" placeholder="Amount" required>
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-success">Collect</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-info">No customers found</div>
+    {% endif %}
+  </div>
+</body>
+</html>

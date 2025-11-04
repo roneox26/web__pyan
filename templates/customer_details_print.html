@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Customer Details - {{ customer.name }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    @media print {
+      .no-print { display: none; }
+      body { font-size: 9px; margin: 5px; }
+      .header { padding-bottom: 5px; margin-bottom: 10px; }
+      .card { margin-bottom: 5px !important; }
+      h5, h6 { margin: 5px 0 !important; font-size: 11px; }
+      .row { margin-bottom: 5px !important; }
+    }
+    body { padding: 10px; font-size: 11px; }
+    .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 10px; }
+    table { font-size: 10px; margin-bottom: 10px !important; }
+    th, td { padding: 2px 4px !important; }
+    .card { margin-bottom: 10px; }
+    .card-body { padding: 8px !important; }
+    p { margin-bottom: 3px; }
+  </style>
+</head>
+<body>
+  <div class="no-print mb-3 text-center">
+    <button onclick="window.print()" class="btn btn-primary">🖨️ প্রিন্ট করুন</button>
+    <a href="{{ url_for('customer_details', id=customer.id) }}" class="btn btn-secondary">ফিরে যান</a>
+  </div>
+
+  <div class="header">
+    <h5 class="text-primary mb-1">আল-ইনসাফ ক্ষুদ্র ব্যবসায়ী সমবায় সমিতি লি:</h5>
+    <h6 class="mb-0">সদস্যার বিস্তারিত তথ্য</h6>
+  </div>
+
+  <!-- Customer Info -->
+  <div class="card mb-2">
+    <div class="card-body">
+      <h6 class="card-title mb-2"><strong>{{ customer.name }}</strong> | সদস্যা নং: {{ customer.member_no or 'N/A' }} | মোবাইল: {{ customer.phone }}</h6>
+      <div class="row">
+        <div class="col-md-12">
+          <p><strong>পিতা/স্বামী:</strong> {{ customer.father_husband or 'N/A' }} | <strong>গ্রাম:</strong> {{ customer.village or 'N/A' }} | <strong>থানা:</strong> {{ customer.thana or 'N/A' }} | <strong>জেলা:</strong> {{ customer.district or 'N/A' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <table class="table table-bordered table-sm mb-2">
+    <tr>
+      <td><strong>মোট লোন:</strong> ৳{{ "{:,.0f}".format(customer.total_loan) }}</td>
+      <td><strong>বাকি লোন:</strong> ৳{{ "{:,.0f}".format(customer.remaining_loan) }}</td>
+      <td><strong>সঞ্চয়:</strong> ৳{{ "{:,.0f}".format(customer.savings_balance) }}</td>
+      <td><strong>উত্তোলন:</strong> ৳{{ "{:,.0f}".format(total_withdrawn) }}</td>
+    </tr>
+  </table>
+
+  <!-- Loan Collection History -->
+  <h6 class="mt-2 mb-1">লোন কালেকশন</h6>
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>ক্রমিক</th>
+        <th>টাকার পরিমাণ</th>
+        <th>তারিখ</th>
+        <th>কালেক্টর</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lc in loan_collections %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>৳{{ "{:,.0f}".format(lc.amount) }}</td>
+        <td>{{ lc.collection_date.strftime('%d-%m-%Y') }}</td>
+        <td>{{ lc.staff.name }}</td>
+      </tr>
+      {% endfor %}
+      {% if not loan_collections %}
+      <tr>
+        <td colspan="4" class="text-center">কোনো লোন কালেকশন নেই</td>
+      </tr>
+      {% endif %}
+    </tbody>
+    <tfoot class="table-secondary">
+      <tr>
+        <th colspan="1">মোট:</th>
+        <th>৳{{ "{:,.0f}".format(total_loan_collected) }}</th>
+        <th colspan="2"></th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Savings Collection History -->
+  <h6 class="mt-2 mb-1">সঞ্চয় কালেকশন</h6>
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>ক্রমিক</th>
+        <th>টাকার পরিমাণ</th>
+        <th>তারিখ</th>
+        <th>কালেক্টর</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sc in saving_collections %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>৳{{ "{:,.0f}".format(sc.amount) }}</td>
+        <td>{{ sc.collection_date.strftime('%d-%m-%Y') }}</td>
+        <td>{{ sc.staff.name }}</td>
+      </tr>
+      {% endfor %}
+      {% if not saving_collections %}
+      <tr>
+        <td colspan="4" class="text-center">কোনো সঞ্চয় কালেকশন নেই</td>
+      </tr>
+      {% endif %}
+    </tbody>
+    <tfoot class="table-secondary">
+      <tr>
+        <th colspan="1">মোট:</th>
+        <th>৳{{ "{:,.0f}".format(total_saving_collected) }}</th>
+        <th colspan="2"></th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Savings Withdrawal History -->
+  <h6 class="mt-2 mb-1">সঞ্চয় ফেরত</h6>
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>ক্রমিক</th>
+        <th>টাকার পরিমাণ</th>
+        <th>তারিখ</th>
+        <th>নোট</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for w in withdrawals %}
+      <tr class="table-danger">
+        <td>{{ loop.index }}</td>
+        <td>৳{{ "{:,.0f}".format(w.amount) }}</td>
+        <td>{{ w.date.strftime('%d-%m-%Y') }}</td>
+        <td>{{ w.note or '-' }}</td>
+      </tr>
+      {% endfor %}
+      {% if not withdrawals %}
+      <tr>
+        <td colspan="4" class="text-center">কোনো সঞ্চয় ফেরত নেই</td>
+      </tr>
+      {% endif %}
+    </tbody>
+    <tfoot class="table-secondary">
+      <tr>
+        <th colspan="1">মোট:</th>
+        <th>৳{{ "{:,.0f}".format(total_withdrawn) }}</th>
+        <th colspan="2"></th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="text-center mt-2">
+    <small class="text-muted">প্রিন্ট: {{ now.strftime('%d-%m-%Y') }}</small>
+  </div>
+</body>
+</html>

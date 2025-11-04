@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>মাসিক খরচ রিপোর্ট</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    @media print { .no-print { display: none; } }
+  </style>
+</head>
+<body class="container mt-4">
+  <div class="no-print mb-3">
+    <form method="GET" class="row g-2">
+      <div class="col-auto">
+        <select name="month" class="form-control">
+          {% for m in range(1, 13) %}
+          <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto">
+        <select name="year" class="form-control">
+          {% for y in range(2020, 2030) %}
+          <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">দেখুন</button>
+        <button onclick="window.print()" class="btn btn-success">🖨️ Print</button>
+        <a href="{{ url_for('manage_expenses') }}" class="btn btn-secondary">⬅️ Back</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="text-center mb-4">
+    <h3>আল-ইনসাফ ক্ষুদ্র ব্যবসায়ী সমবায় সমিতি লি:</h3>
+    <h5>মাসিক খরচ রিপোর্ট</h5>
+    <p>{{ month_name }} {{ year }}</p>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card p-2 text-center">
+        <small>👨💼 Salary</small>
+        <h5>৳{{ "%.2f"|format(salary_total or 0) }}</h5>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-2 text-center">
+        <small>🏢 Office</small>
+        <h5>৳{{ "%.2f"|format(office_total or 0) }}</h5>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-2 text-center">
+        <small>🚗 Transport</small>
+        <h5>৳{{ "%.2f"|format(transport_total or 0) }}</h5>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-2 text-center bg-danger text-white">
+        <small>মোট</small>
+        <h5>৳{{ "%.2f"|format(total or 0) }}</h5>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>তারিখ</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th class="text-end">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for exp in expenses %}
+      <tr>
+        <td>{{ exp.date.strftime('%d-%m-%Y') }}</td>
+        <td>
+          {% if exp.category == 'Salary' %}👨💼 Salary
+          {% elif exp.category == 'Office' %}🏢 Office
+          {% elif exp.category == 'Transport' %}🚗 Transport
+          {% else %}📦 Other{% endif %}
+        </td>
+        <td>{{ exp.description or '-' }}</td>
+        <td class="text-end">৳{{ "%.2f"|format(exp.amount or 0) }}</td>
+      </tr>
+      {% endfor %}
+      <tr class="table-primary fw-bold">
+        <td colspan="3" class="text-end">মোট খরচ:</td>
+        <td class="text-end">৳{{ "%.2f"|format(total or 0) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="mt-5 text-center">
+    <p>_____________________</p>
+    <p>Authorized Signature</p>
+  </div>
+</body>
+</html>
