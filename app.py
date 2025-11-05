@@ -1096,7 +1096,19 @@ def logout():
     flash('Logged out successfully.', 'info')
     return redirect(url_for('login'))
 
-if __name__ == '__main__':
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    logging.error(f"500 Error: {error}")
+    flash('একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'danger')
+    return redirect(url_for('dashboard'))
+
+# Initialize database
+try:
     with app.app_context():
         db.create_all()
-    app.run(debug=False, host='0.0.0.0', port=5000)
+except Exception as e:
+    logging.error(f"Database initialization error: {e}")
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
