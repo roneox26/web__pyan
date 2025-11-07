@@ -1,57 +1,125 @@
-# Deployment Guide
+# PythonAnywhere Deployment Guide
 
-## Railway Deployment (Recommended - Free & Easy)
+## Step 1: GitHub এ কোড আপলোড করুন
 
-### Steps:
-
-1. **Create Railway Account**
-   - Go to https://railway.app
-   - Sign up with GitHub
-
-2. **Deploy Project**
-   - Click "New Project"
-   - Select "Deploy from GitHub repo"
-   - Choose your repository
-
-3. **Add MySQL Database**
-   - Click "New" → "Database" → "Add MySQL"
-   - Railway automatically sets DATABASE_URL
-
-4. **Environment Variables** (Optional)
-   - Add SECRET_KEY if needed
-
-5. **Deploy**
-   - Railway automatically deploys
-   - Your app will be live at: `your-app.railway.app`
-
-### Local Testing with MySQL:
+1. GitHub এ নতুন repository তৈরি করুন
+2. আপনার local folder এ যান:
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Set MySQL connection
-set DATABASE_URL=mysql://user:password@host:3306/dbname
-
-# Run app
-python app.py
+cd e:\web\ngo
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git push -u origin main
 ```
 
-## Alternative: Render + PostgreSQL (Free)
+## Step 2: PythonAnywhere Account তৈরি করুন
 
-1. Go to https://render.com
-2. Create Web Service from GitHub
-3. Add PostgreSQL database (free)
-4. Deploy
+1. যান: https://www.pythonanywhere.com/registration/register/beginner/
+2. Free account তৈরি করুন
+3. Email verify করুন
 
-## Alternative: PythonAnywhere (Free)
+## Step 3: PythonAnywhere এ Code Clone করুন
 
-1. Upload files to PythonAnywhere
-2. Uses SQLite (persistent storage)
-3. Configure WSGI
-4. No database setup needed
+1. PythonAnywhere Dashboard এ যান
+2. "Consoles" tab এ ক্লিক করুন
+3. "Bash" console খুলুন
+4. নিচের commands রান করুন:
 
-## Note:
-- **Vercel**: ❌ Not suitable (no persistent storage for SQLite)
-- **Railway**: ✅ Best option (free MySQL + persistent)
-- **Render**: ✅ Good option (free PostgreSQL)
-- **PythonAnywhere**: ✅ Simple option (SQLite works)
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+cd YOUR_REPO
+```
+
+## Step 4: Virtual Environment তৈরি করুন
+
+```bash
+mkvirtualenv --python=/usr/bin/python3.10 myenv
+pip install -r requirements.txt
+```
+
+## Step 5: Web App Setup করুন
+
+1. "Web" tab এ যান
+2. "Add a new web app" ক্লিক করুন
+3. "Manual configuration" সিলেক্ট করুন
+4. Python 3.10 সিলেক্ট করুন
+
+## Step 6: WSGI Configuration
+
+1. Web tab এ "WSGI configuration file" লিংকে ক্লিক করুন
+2. সব কিছু মুছে দিয়ে এটা paste করুন:
+
+```python
+import sys
+import os
+
+# Add your project directory to the sys.path
+project_home = '/home/YOUR_USERNAME/YOUR_REPO'
+if project_home not in sys.path:
+    sys.path = [project_home] + sys.path
+
+# Set environment variable
+os.environ['FLASK_APP'] = 'app.py'
+
+# Import flask app
+from app import app as application
+```
+
+**গুরুত্বপূর্ণ:** `YOUR_USERNAME` এবং `YOUR_REPO` আপনার নাম দিয়ে replace করুন
+
+## Step 7: Virtual Environment Path সেট করুন
+
+1. Web tab এ ফিরে যান
+2. "Virtualenv" section এ যান
+3. Path দিন: `/home/YOUR_USERNAME/.virtualenvs/myenv`
+
+## Step 8: Static Files Setup
+
+Web tab এ "Static files" section এ:
+- URL: `/static/`
+- Directory: `/home/YOUR_USERNAME/YOUR_REPO/static/`
+
+## Step 9: Database Initialize করুন
+
+Bash console এ:
+```bash
+cd YOUR_REPO
+workon myenv
+python
+>>> from app import app, db
+>>> with app.app_context():
+...     db.create_all()
+>>> exit()
+```
+
+## Step 10: Reload Web App
+
+1. Web tab এ যান
+2. সবুজ "Reload" button এ ক্লিক করুন
+3. আপনার URL: `YOUR_USERNAME.pythonanywhere.com`
+
+## সমস্যা হলে:
+
+### Error Log দেখুন:
+Web tab → Log files → Error log
+
+### Common Issues:
+
+1. **Import Error**: Virtual environment path ঠিক আছে কিনা চেক করুন
+2. **Database Error**: Database initialize করেছেন কিনা চেক করুন
+3. **Static Files না দেখালে**: Static files path ঠিক আছে কিনা চেক করুন
+
+## Update করার জন্য:
+
+```bash
+cd YOUR_REPO
+git pull origin main
+workon myenv
+pip install -r requirements.txt
+# Web tab এ গিয়ে Reload করুন
+```
+
+## Default Login:
+- Admin: admin@example.com / admin123
+- Staff: staff@example.com / staff123

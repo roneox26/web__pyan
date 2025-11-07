@@ -1,0 +1,104 @@
+==============================================
+PythonAnywhere Deployment - Quick Guide
+==============================================
+
+আপনার GitHub: https://github.com/roneox26/web__pyan
+
+==============================================
+Step 1: PythonAnywhere Account
+==============================================
+1. যান: https://www.pythonanywhere.com/registration/register/beginner/
+2. Username: roneox26 (অথবা যেকোনো নাম)
+3. Email এবং Password দিন
+4. Register করুন
+
+==============================================
+Step 2: Bash Console এ Code Clone করুন
+==============================================
+1. Dashboard → Consoles → Bash
+2. Commands:
+
+git clone https://github.com/roneox26/web__pyan.git
+cd web__pyan
+ls
+
+==============================================
+Step 3: Virtual Environment তৈরি করুন
+==============================================
+
+mkvirtualenv --python=/usr/bin/python3.10 ngoenv
+pip install -r requirements.txt
+
+(2-3 মিনিট অপেক্ষা করুন)
+
+==============================================
+Step 4: Web App Setup
+==============================================
+1. Web tab → Add a new web app
+2. Manual configuration → Python 3.10
+3. Virtualenv path: /home/YOUR_USERNAME/.virtualenvs/ngoenv
+   (YOUR_USERNAME = আপনার pythonanywhere username)
+
+==============================================
+Step 5: WSGI Configuration
+==============================================
+1. Web tab → WSGI configuration file (ক্লিক করুন)
+2. সব মুছে এটা paste করুন:
+
+import sys
+import os
+
+project_home = '/home/YOUR_USERNAME/web__pyan'
+if project_home not in sys.path:
+    sys.path = [project_home] + sys.path
+
+from app import app as application
+
+3. Save করুন
+   (YOUR_USERNAME = আপনার pythonanywhere username)
+
+==============================================
+Step 6: Database Initialize
+==============================================
+Bash console এ:
+
+cd web__pyan
+workon ngoenv
+python3
+
+Python shell এ:
+
+from app import app, db
+with app.app_context():
+    db.create_all()
+exit()
+
+==============================================
+Step 7: Reload Web App
+==============================================
+Web tab → সবুজ Reload button ক্লিক করুন
+
+==============================================
+Step 8: Open Website
+==============================================
+URL: YOUR_USERNAME.pythonanywhere.com
+
+Login:
+Admin: admin@example.com / admin123
+Staff: staff@example.com / staff123
+
+==============================================
+Update করার জন্য:
+==============================================
+
+cd web__pyan
+git pull origin main
+workon ngoenv
+pip install -r requirements.txt
+
+তারপর Web tab এ Reload করুন
+
+==============================================
+সমস্যা হলে:
+==============================================
+Web tab → Log files → Error log দেখুন

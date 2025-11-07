@@ -108,8 +108,10 @@ def dashboard():
         fee_period = request.args.get('fee_period', 'all')
         
         admission_fees = db.session.query(db.func.sum(Customer.admission_fee)).scalar() or 0
+        application_fees = db.session.query(db.func.sum(Loan.application_fee)).scalar() or 0
+        welfare_fees = db.session.query(db.func.sum(Loan.welfare_fee)).scalar() or 0
         service_charges = db.session.query(db.func.sum(Loan.service_charge)).scalar() or 0
-        total_fees = admission_fees + service_charges
+        total_fees = admission_fees + application_fees + welfare_fees + service_charges
         
         return render_template('admin_dashboard.html', name=current_user.name, staff_count=staff_count, total_loans=total_loans, pending_loans=pending_loans, total_savings=total_savings, total_customers=total_customers, cash_balance=cash_balance, period=period, fee_period=fee_period, total_fees=total_fees)
     elif current_user.role == 'staff':

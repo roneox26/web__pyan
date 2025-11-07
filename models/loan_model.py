@@ -11,8 +11,9 @@ class Loan(db.Model):
     due_date = db.Column(db.DateTime, nullable=False)
     installment_count = db.Column(db.Integer, default=0)
     installment_amount = db.Column(db.Float, default=0.0)
-    service_charge = db.Column(db.Float, default=0.0)
+    application_fee = db.Column(db.Float, default=0.0)
     welfare_fee = db.Column(db.Float, default=0.0)
+    service_charge = db.Column(db.Float, default=0.0)
     installment_type = db.Column(db.String(50))
     status = db.Column(db.String(20), default='Pending')  # Pending or Paid
     staff_id = db.Column(db.Integer, db.ForeignKey('user.id'))

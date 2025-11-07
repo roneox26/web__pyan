@@ -1,0 +1,50 @@
+==============================================
+GitHub এ Push করার Commands
+==============================================
+
+Terminal/CMD open করে এই commands রান করুন:
+
+cd e:\web\ngo
+
+git init
+
+git add .
+
+git commit -m "NGO Management System - Ready for deployment"
+
+git branch -M main
+
+git remote add origin https://github.com/roneox26/web__pyan.git
+
+git push -u origin main
+
+
+==============================================
+যদি "remote origin already exists" error আসে:
+==============================================
+
+git remote remove origin
+
+git remote add origin https://github.com/roneox26/web__pyan.git
+
+git push -u origin main
+
+
+==============================================
+পরবর্তীতে Update করার জন্য:
+==============================================
+
+git add .
+
+git commit -m "Updated code"
+
+git push origin main
+
+
+==============================================
+PythonAnywhere এ Clone করার Command:
+==============================================
+
+git clone https://github.com/roneox26/web__pyan.git
+
+cd web__pyan
